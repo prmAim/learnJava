@@ -40,9 +40,9 @@ public class HomeWork3_22062021 {
         System.out.println();
 
         System.out.println("The task 8");
-        moveValueOfArray(createArrayBit(20, 100), 20);
-        System.out.println();
-
+        int[] arrayMain2 = createArrayBit(10, 100);
+        printArray("Исходный массив: ", arrayMain2);
+        printArray("Итоговый массив: ", moveValueOfArray(arrayMain2, -2));
     }
 
     /**
@@ -193,7 +193,25 @@ public class HomeWork3_22062021 {
      * [ 3, 5, 6, 1] при n = -2 (на два влево) -> [ 6, 1, 3, 5 ]. При каком n в какую сторону сдвиг можете выбирать сами.
      */
     private static int[] moveValueOfArray(int[] array, int n) {
-
+        for (int i = 0; i < Math.abs(n); i++) {
+            if (n < 0) {
+                for (int j = 0, temp = array[0]; j < array.length; j++) {
+                    if (j + 1 == array.length) {
+                        array[j] = temp;
+                        break;
+                    }
+                    array[j] = array[j + 1];
+                }
+            } else {
+                for (int j = array.length - 1, temp = array[array.length - 1]; j >= 0; j--) {
+                    if (j - 1 < 0) {
+                        array[j] = temp;
+                        break;
+                    }
+                    array[j] = array[j - 1];
+                }
+            }
+        }
         return array;
     }
 
