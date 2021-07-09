@@ -4,23 +4,32 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class HomeWork_25062021 {
-    static final int SIZE = 3;
-//    static final int DOTS_TO_WIN = 3;
-
+    // Константа - размер поля
+    static final int SIZE = 5;
+    // Констатнта - кол-во ячеек для победы
+    static final int DOTS_TO_WIN = 4;
+    // Константа - ход Игрока
     static final char DOT_X = 'X';
+    // Констатнта - ход ПК
     static final char DOT_O = 'O';
+    // Константа - пустая яцейка
     static final char DOT_EMPTY = '.';
 
     static char[][] map;
-
+    // Ссылка - константа для ввода данных
     static final Scanner sc = new Scanner(System.in);
+    // Ссылка - константа для генератора чисел
     static final Random random = new Random();
 
     public static void main(String[] args) {
+        boolean isChckSetpToWin = true;
         initMap();
         printMap();
-
-        while (true) {
+        if (DOTS_TO_WIN > SIZE) {
+            System.out.println("Не соблюдены условия победы! Количество ячеек карты меньше суммы кол-во знаков для победы");
+            isChckSetpToWin = false;
+        }
+        while (isChckSetpToWin) {
             humanTurn();
             printMap();
             if (checkWin(DOT_X)) {
@@ -45,7 +54,9 @@ public class HomeWork_25062021 {
         }
     }
 
-
+    /**
+     * Создание первоначальной матрицы
+     */
     public static void initMap() {
         map = new char[SIZE][SIZE];
 
@@ -56,6 +67,9 @@ public class HomeWork_25062021 {
         }
     }
 
+    /**
+     * Построение матрицы и ее отрисовка
+     */
     public static void printMap() {
         System.out.print("  ");
         for (int i = 0; i < SIZE; i++) {
@@ -72,6 +86,9 @@ public class HomeWork_25062021 {
         }
     }
 
+    /**
+     * Ход игрока. Проверка на заполненость ячейки.
+     */
     public static void humanTurn() {
         int x;
         int y;
@@ -85,6 +102,9 @@ public class HomeWork_25062021 {
         map[y][x] = DOT_X;
     }
 
+    /**
+     * Ход компютера. Генерация координат и установка 0. Проверка на заполненость ячейки.
+     */
     public static void aiTurn() {
         int x;
         int y;
@@ -97,14 +117,19 @@ public class HomeWork_25062021 {
         map[y][x] = DOT_O;
     }
 
+    /**
+     * Проверка на свободное значение в ячейке
+     */
     public static boolean isCellValid(int y, int x) {
         if (x < 0 || y < 0 || x >= SIZE || y >= SIZE) {
             return false;
         }
-
         return map[y][x] == DOT_EMPTY;
     }
 
+    /**
+     * Проверка на заполненость матрицы
+     */
     public static boolean isFull() {
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
@@ -116,35 +141,52 @@ public class HomeWork_25062021 {
         return true;
     }
 
+    /**
+     * УСЛОВИЯ ПОБЕДЫ.
+     * Попробовать переписать логику проверки победы, чтобы она работала для поля 5х5 и количества фишек 4.
+     * Очень желательно не делать это просто набором условий для каждой из возможных ситуаций;
+     */
     public static boolean checkWin(char c) {
-        if (map[0][0] == c && map[0][1] == c && map[0][2] == c) {
-            return true;
+        int sumWinX, sumWinY, sumWinXY, sumWinZ;
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                sumWinX = 0;
+                sumWinY = 0;
+                sumWinXY = 0;
+                sumWinZ = 0;
+                for (int k = 0; k < DOTS_TO_WIN; k++) {
+                    // проверка на условие победы по оси Х
+                    if (j + k < SIZE) {
+                        if (map[i][j + k] == c) {
+                            sumWinX++;
+                        }
+                    }
+                    // проверка на условие победы по оси Y
+                    if (i + k < SIZE) {
+                        if (map[i + k][j] == c) {
+                            sumWinY++;
+                        }
+                    }
+                    // проверка на условие победы по диагонали вниз
+                    if (j + k < SIZE && i + k < SIZE) {
+                        if (map[i + k][j + k] == c) {
+                            sumWinXY++;
+                        }
+                    }
+                    // проверка на условие победы по гиагонали вверх
+                    if (j + k < SIZE && i - k > 0) {
+                        if (map[i - k][j + k] == c) {
+                            sumWinZ++;
+                        }
+                    }
+                    if (sumWinX == DOTS_TO_WIN || sumWinY == DOTS_TO_WIN || sumWinXY == DOTS_TO_WIN || sumWinZ == DOTS_TO_WIN) {
+                        return true;
+                    }
+                }
+            }
         }
-        if (map[1][0] == c && map[1][1] == c && map[1][2] == c) {
-            return true;
-        }
-        if (map[2][0] == c && map[2][1] == c && map[2][2] == c) {
-            return true;
-        }
-
-        if (map[0][0] == c && map[1][0] == c && map[2][0] == c) {
-            return true;
-        }
-        if (map[0][1] == c && map[1][1] == c && map[2][1] == c) {
-            return true;
-        }
-        if (map[0][2] == c && map[1][2] == c && map[2][2] == c) {
-            return true;
-        }
-
-        if (map[0][0] == c && map[1][1] == c && map[2][2] == c) {
-            return true;
-        }
-        if (map[0][2] == c && map[1][1] == c && map[2][0] == c) {
-            return true;
-        }
-
         return false;
+
     }
 
 }
