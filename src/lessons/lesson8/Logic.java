@@ -15,27 +15,28 @@ public class Logic {
 
     static final Random random = new Random();
     static boolean isGameFinished;
+    static String isWinner;
 
     public static void go() {
         isGameFinished = true;
         printMap();
         if (checkWinLines(DOT_X, DOTS_TO_WIN)) {
-            System.out.println("Вы победили!");
+            System.out.println(isWinner = "Вы победили!");
             return;
         }
         if (isFull()) {
-            System.out.println("Ничья");
+            System.out.println(isWinner = "Ничья");
             return;
         }
 
         aiTurn();
         printMap();
         if (checkWinLines(DOT_O, DOTS_TO_WIN)) {
-            System.out.println("Компьютер победил. Сейчас их даже в шахматы не выиграть...");
-           return;
+            System.out.println(isWinner = "Компьютер победил. Сейчас их даже в шахматы не выиграть...");
+            return;
         }
         if (isFull()) {
-            System.out.println("Ничья");
+            System.out.println(isWinner = "Ничья");
             return;
         }
 
@@ -162,7 +163,6 @@ public class Logic {
         }
         return true;
     }
-
 
 
     static boolean checkLine(int cy, int cx, int vy, int vx, char dot, int dotsToWin) {
