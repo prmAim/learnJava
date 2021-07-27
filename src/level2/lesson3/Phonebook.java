@@ -11,17 +11,14 @@ class Phonebook {
   /**
    * Добавление в телефонный справочник Имя и его номер телефона
    */
-  void add(String name, int... phoneNumber) {
-    for (int i = 0; i < phoneNumber.length; i++) {
-      if (phBook.get(name) == null) {
-        phBook.put(name, new HashSet<>(Arrays.asList(phoneNumber[i])));
-      } else {
-        phBook.get(name).add(phoneNumber[i]);
-      }
+  void add(String name, Integer... phoneNumber) {
+    Set<Integer> phones = new HashSet<>(Arrays.asList(phoneNumber));
+    if (phBook.get(name) == null) {
+      phBook.put(name, phones);
+    } else {
+      phBook.get(name).addAll(phones);
     }
-
   }
-
   /**
    * С помощью метода get() искать номер телефона по фамилии.
    * * Следует учесть, что под одной фамилией может быть несколько телефонов, тогда при запросе такой фамилии должны
