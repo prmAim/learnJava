@@ -11,12 +11,15 @@ class Phonebook {
   /**
    * Добавление в телефонный справочник Имя и его номер телефона
    */
-  void add(String name, int phoneNumber) {
-    if (phBook.get(name) == null) {
-      phBook.put(name, new HashSet<>(Arrays.asList(phoneNumber)));
-    } else {
-      phBook.get(name).add(phoneNumber);
+  void add(String name, int... phoneNumber) {
+    for (int i = 0; i < phoneNumber.length; i++) {
+      if (phBook.get(name) == null) {
+        phBook.put(name, new HashSet<>(Arrays.asList(phoneNumber[i])));
+      } else {
+        phBook.get(name).add(phoneNumber[i]);
+      }
     }
+
   }
 
   /**
