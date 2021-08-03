@@ -1,0 +1,49 @@
+.root{
+  -fx-font-size: 12pt;
+  -fx-text-fill: #c60000;
+  -fx-indent: 5px;
+  -fx-background-color: #c9a66b;
+}
+
+.MenuBar{
+  -fx-font-size: 10pt;
+  -fx-font-family: "Arial Black";
+  -fx-font-weight: bold;
+  -fx-fill: #805a3b;
+}
+
+.TextArea{
+  -fx-text-area-background: #c9a66b;
+  -fx-padding: 10px, 5px, 10px, 5px;
+}
+
+.text-area .content {
+  -fx-background-color: #c9a66b;
+  -fx-font-weight: bold;
+}
+
+#textArea {
+  -fx-text-fill: #af4425;
+  -fx-font-weight: bold;
+}
+
+.TextField {
+  -fx-font-size: 12px;
+  -fx-background-color: #c9a66b;
+}
+
+#textField{
+  -fx-min-width: 400px;
+}
+
+.button{
+  -fx-text-fill: white;
+  -fx-font-family: "Arial Narrow";
+  -fx-font-weight: bold;
+  -fx-background-color: #662e1c;
+}
+
+.button:pressed, .button:default:hover:pressed {
+  -fx-text-fill: #af4425;
+  -fx-font-weight: bold;
+}

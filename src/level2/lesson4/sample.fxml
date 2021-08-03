@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="level2.lesson4.Controller">
+    <stylesheets>
+        <URL value="@css/style.css" />
+    </stylesheets>
+    <top>
+        <MenuBar>
+            <Menu text="File">
+                <MenuItem onAction="#clickClose" text="Exit" />
+            </Menu>
+        </MenuBar>
+    </top>
+    <center>
+        <TextArea fx:id="textArea" />
+    </center>
+    <bottom>
+        <AnchorPane>
+            <TextField fx:id="textField" onAction="#sendMsg" AnchorPane.leftAnchor="10.0"/>
+            <Button fx:id="btnSend" onAction="#sendMsg" text="Send" AnchorPane.rightAnchor="10.0"/>
+        </AnchorPane>
+    </bottom>
+
+</BorderPane>
