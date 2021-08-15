@@ -30,7 +30,7 @@ public class Server {
       // Входящий поток для получение данных с клвавиатуры
       Scanner sc2 = new Scanner(System.in);
 
-      new Thread(() -> {    // Запустили параллельный поток
+      Thread threadReader = new Thread(() -> {    // Запустили параллельный поток
         while (true) {
           String inStr = sc2.nextLine();    // Операция БЛОКИРУЮЩАЯ. получение данных из консоли
           if (inStr.equals("/end")) {
@@ -41,7 +41,9 @@ public class Server {
           }
           out.println(inStr);
         }
-      }).start();
+      });
+      threadReader.setDaemon(true);  // поток становиться дочерним. То есть если закроется поток main, то этот поток тоже закроется.
+      threadReader.start();
 
       while (true) {
         String str = sc.nextLine();     // Операция БЛОКИРУЮЩАЯ. получение данных от клиента
