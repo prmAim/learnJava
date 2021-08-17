@@ -58,8 +58,12 @@ public class ClientHandler {
                             System.out.printf("LOG: Client %s disconnected!\n", nickname);
                             break;
                         }
-
-                        server.broadcastMsg(this, str);      // Широковещательная рассылка
+                        String[] token = str.split("\\s+", 3);
+                        if (token[0].equals("/w")){
+                         server.sendMsgToClient(this, token[1], token[2]);
+                        } else {
+                            server.broadcastMsg(this, str);      // Широковещательная рассылка
+                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
