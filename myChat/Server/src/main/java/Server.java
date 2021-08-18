@@ -52,16 +52,18 @@ public class Server {
   /**
    * Реализовать личные сообщения, если клиент пишет «/w nick3 Привет, как дела?», то только клиенту с ником nick3 и отправителю должно прийти сообщение «Привет, как дела? »
    */
-  public void sendMsgToClient(ClientHandler sender, String toClient, String msg) {
-    String message = String.format("[ %s ]: %s", sender.getNickname(), msg);
+  public void privateMsg(ClientHandler sender, String receiver, String msg) {
+    String message = String.format("[ %s ] to [ %s ] : %s", sender.getNickname(), receiver, msg);
     for (ClientHandler c : clients) {
-      if (c.getNickname().equals(toClient)){
-        sender.sendMsg(message);
+      if (c.getNickname().equals(receiver)) {
         c.sendMsg(message);
+        if (!c.equals(sender)) {
+          sender.sendMsg(message);
+        }
         return;
       }
     }
-    sender.sendMsg(String.format("[ %s ]: В сети нет такого псевдонима %s", sender.getNickname(), toClient));
+    sender.sendMsg(String.format("[ %s ]: В сети нет такого псевдонима %s", sender.getNickname(), receiver));
   }
 
   /**

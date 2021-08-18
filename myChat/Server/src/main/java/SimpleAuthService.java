@@ -37,7 +37,8 @@ public class SimpleAuthService implements AuthService {
 
   /**
    * Аутентификация клиента. Если логин и пароль совпадают, то возвращаем псевдоним клиента, иначе null.
-   * @param login логин, не должен содержать пробелов
+   *
+   * @param login    логин, не должен содержать пробелов
    * @param password пароль, не должен содержать пробелов
    * @return
    */
