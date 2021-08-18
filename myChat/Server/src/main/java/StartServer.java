@@ -2,7 +2,7 @@
  * Класс для запуска сервера
  */
 public class StartServer {
-    public static void main(String[] args) {
-        new Server();
-    }
+  public static void main(String[] args) {
+    new Server();
+  }
 }
