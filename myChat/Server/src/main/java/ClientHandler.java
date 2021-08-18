@@ -14,6 +14,7 @@ public class ClientHandler {
 
   private boolean isAuthenticated;
   private String nickname;
+  private String login;
 
   public ClientHandler(Socket socket, Server server) {
     try {
@@ -38,14 +39,34 @@ public class ClientHandler {
               String[] token = str.split("\\s+");
               nickname = server.getAuthService()          // Проверка на аутентификацию
                       .getNicknameByLoginAndPassword(token[1], token[2]);
+              login = token[1];
               if (nickname != null) {
-                server.subscribe(this);     // Добавление клиента в список рассылки
-                isAuthenticated = true;                // Флаг аутентификации
-                sendMsg("/authOK " + nickname);        // Отправка ссобщение клиенту об успешной авторизации
-                System.out.printf("LOG: Client [%s] authecated!\n", nickname);
-                break;
+                if (!server.isLoginAuthenticated(login)) {
+                  sendMsg("/authOK " + nickname);        // Отправка ссобщение клиенту об успешной авторизации
+                  server.subscribe(this);     // Добавление клиента в список рассылки
+                  isAuthenticated = true;                // Флаг аутентификации
+                  System.out.printf("LOG: Client [%s] authecated!\n", nickname);
+                  break;
+                } else {
+                  sendMsg("С этим логином уже вошли");
+                }
               } else {
                 sendMsg("Неверный логин / пароль");
+              }
+            }
+
+            if (str.startsWith("/reg ")) {
+              String[] token = str.split("\\s+");
+              if (token.length < 4) {
+                continue;
+              }
+
+              boolean regOk = server.getAuthService().
+                      registration(token[1], token[2], token[3]);
+              if (regOk) {
+                sendMsg("/regOK");
+              } else {
+                sendMsg("/regError");
               }
             }
           }
@@ -105,5 +126,9 @@ public class ClientHandler {
    */
   public String getNickname() {
     return nickname;
+  }
+
+  public String getLogin() {
+    return login;
   }
 }

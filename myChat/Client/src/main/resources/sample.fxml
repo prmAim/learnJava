@@ -8,6 +8,7 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ListView?>
 <VBox fx:controller="Controller"
       xmlns:fx="http://javafx.com/fxml" alignment="center" >
 
@@ -25,9 +26,14 @@
         <PasswordField fx:id="passwordField" promptText="enter password" HBox.hgrow="ALWAYS"
                        onAction="#sendAuth"/>
         <Button text="auth" minWidth="80" onAction="#sendAuth"/>
+        <Button text="reg" minWidth="80" onAction="#showRegWindow"/>
     </HBox>
 
-    <TextArea fx:id="textArea" VBox.vgrow="ALWAYS" editable="false"/>
+    <HBox VBox.vgrow="ALWAYS">
+        <TextArea fx:id="textArea" HBox.hgrow="ALWAYS" editable="false"/>
+        <ListView fx:id="clientList" visible="false" managed="false" minWidth="150"
+                  onMouseReleased="#clientListClick"/>
+    </HBox>
 
     <HBox fx:id="sendMsgPanel" visible="false" managed="false">
         <TextField fx:id="textField" onAction="#sendMsg" HBox.hgrow="ALWAYS" promptText="input message"/>

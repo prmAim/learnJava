@@ -2,12 +2,19 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 
 import java.io.DataInputStream;
@@ -18,6 +25,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
+  @FXML
+  private ListView<String> clientList;
   @FXML
   private TextArea textArea;
   @FXML
@@ -40,6 +49,8 @@ public class Controller implements Initializable {
   private boolean authenticated;
   private String nickname;
   private Stage stage;
+  private Stage regStage;
+  private RegController regController;
 
   /**
    * Режим работы клиента Авторизован/НЕ автаризован
@@ -103,6 +114,12 @@ public class Controller implements Initializable {
                 setAuthenticated(true);               // Аутентификация одобрена. Переход в режим отправки сообщений в чат.
                 break;
               }
+              if (str.equals("/regOK")) {
+                regController.regResult("Регистрация прошла успешно");
+              }
+              if (str.equals("/regError")) {
+                regController.regResult("Логин или никнейм уже заняты");
+              }
             } else {
               textArea.appendText(str + "\n");
             }
@@ -110,11 +127,22 @@ public class Controller implements Initializable {
           // цикл работы
           while (authenticated) {
             String str = in.readUTF();          // Блокирующая операция. Чтение из входного потока (от сервера).
-
-            if (str.equals("/end")) {
-              break;
+            if (str.startsWith("/")) {
+              if (str.equals("/end")) {
+                break;
+              }
+              if (str.startsWith("/clientlist ")) {
+                String[] token = str.split("\\s+");
+                Platform.runLater(() -> {
+                  clientList.getItems().clear();
+                  for (int i = 1; i < token.length; i++) {
+                    clientList.getItems().add(token[i]);
+                  }
+                });
+              }
+            } else {
+              textArea.appendText(str + "\n");  // Вывод данных в поле сообщений
             }
-            textArea.appendText(str + "\n");  // Вывод данных в поле сообщений
           }
 
         } catch (IOException e) {
@@ -144,6 +172,23 @@ public class Controller implements Initializable {
       out.writeUTF(textField.getText());    // Отправить сообщение в исходящий поток (в сервер)
       textField.clear();
       textField.requestFocus();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void tryToAuth(ActionEvent actionEvent) {
+    if (socket == null || socket.isClosed()) {
+      connect();
+    }
+
+    String login = loginField.getText().trim();
+    String password = passwordField.getText().trim();
+    String msg = String.format("/auth %s %s", login, password);
+
+    try {
+      out.writeUTF(msg);
+      passwordField.clear();
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -180,6 +225,49 @@ public class Controller implements Initializable {
         stage.setTitle("Home Chat");
       }
     });
+  }
+
+  public void clientListClick(MouseEvent mouseEvent) {
+    String receiver = clientList.getSelectionModel().getSelectedItem();
+    textField.setText(String.format("/w %s ", receiver));
+  }
+
+  private void createRegWindow() {
+    try {
+      FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/reg.fxml"));
+      Parent root = fxmlLoader.load();
+      regStage = new Stage();
+      regStage.setTitle("Home Chat registration");
+      regStage.setScene(new Scene(root, 600, 400));
+      regController = fxmlLoader.getController();
+      regController.setController(this);
+
+      regStage.initStyle(StageStyle.UTILITY);
+      regStage.initModality(Modality.APPLICATION_MODAL);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void showRegWindow(ActionEvent actionEvent) {
+    if (regStage == null) {
+      createRegWindow();
+    }
+    regStage.show();
+  }
+
+  public void registration(String login, String password, String nickname) {
+    String msg = String.format("/reg %s %s %s", login, password, nickname);
+
+    if (socket == null || socket.isClosed()) {
+      connect();
+    }
+
+    try {
+      out.writeUTF(msg);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   /**
