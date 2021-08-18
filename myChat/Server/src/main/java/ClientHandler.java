@@ -2,6 +2,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 
 /**
  * Класс <Логика работы с клиентом>
@@ -16,6 +17,8 @@ public class ClientHandler {
   private String nickname;
   private String login;
 
+  private final int TIMEOUT_DISCONNECT = 120000;
+
   public ClientHandler(Socket socket, Server server) {
     try {
       this.socket = socket;
@@ -26,6 +29,7 @@ public class ClientHandler {
 
       new Thread(() -> {
         try {
+          socket.setSoTimeout(TIMEOUT_DISCONNECT);
           // цикл аутентификации
           while (true) {
             String str = in.readUTF();                  // БЛОКИРУЮЩАЯ операция. Ждем данных от клиента.
@@ -45,6 +49,7 @@ public class ClientHandler {
                   sendMsg("/authOK " + nickname);        // Отправка ссобщение клиенту об успешной авторизации
                   server.subscribe(this);     // Добавление клиента в список рассылки
                   isAuthenticated = true;                // Флаг аутентификации
+                  socket.setSoTimeout(0);
                   System.out.printf("LOG: Client [%s] authecated!\n", nickname);
                   break;
                 } else {
@@ -92,7 +97,11 @@ public class ClientHandler {
               server.broadcastMsg(this, str);      // Широковещательная рассылка
             }
           }
-        } catch (IOException e) {
+        } catch (SocketTimeoutException e){
+          sendMsg("/end");
+          System.out.printf("LOG: Client unknown disconnected with Timeout %d\n", TIMEOUT_DISCONNECT);
+        }
+        catch (IOException e) {
           e.printStackTrace();
         } finally {
           server.unsubscribe(this);           // Удаляем клиента из рассылки
