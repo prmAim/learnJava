@@ -1,6 +1,10 @@
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -8,6 +12,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Класс <сервер>
  */
 public class Server {
+  private static Connection connectDB;  // подключение драйвера для работы с БД
+  private static Statement stmtDB;      // подключение оператора запросов к БД
+
   private ServerSocket server;
   private Socket socket;         // Сокет для подключения
   private final int PORT = 8189; // Порт для подклчюения
@@ -17,10 +24,12 @@ public class Server {
 
   public Server() {
     clients = new CopyOnWriteArrayList<>();  // Список клиентов
-    authService = new SimpleAuthService();   // Аутентивикация клиентов
     try {
-      server = new ServerSocket(PORT);    // Открываем порт на сервере
+      server = new ServerSocket(PORT);         // Открываем порт на сервере
       System.out.println("LOG: Server started!");
+
+      connectDB();                             // Подключаем БД
+      authService = new DBAuthService(stmtDB); // Аутентивикация клиентов
 
       while (true) {
         socket = server.accept();       // Слушаем порт. БЛОКИРУЮЩАЯ операция.
@@ -29,8 +38,11 @@ public class Server {
       }
     } catch (IOException e) {
       e.printStackTrace();
+    } catch (SQLException e) {
+      e.printStackTrace();
     } finally {
       try {
+        disconnectDB();             // отключаем соединение с базой данных
         server.close();             // Закрываем соединение.
         System.out.println("LOG: Server close!");
       } catch (IOException e) {
@@ -108,5 +120,31 @@ public class Server {
    */
   public AuthService getAuthService() {
     return authService;
+  }
+
+  /**
+   * Подключаемся к Базе данных
+   */
+  private static void connectDB() throws SQLException {
+    connectDB = DriverManager.getConnection("jdbc:sqlite:chat.db");   // подгрузка драйвера для работы с БД в память
+    stmtDB = connectDB.createStatement();
+    System.out.println("LOG: Connect database!");
+  }
+
+  /**
+   * Отключение к Базе Данных
+   */
+  private static void disconnectDB() {
+    try {
+      if (stmtDB != null) {
+        stmtDB.close();
+      }
+      if (connectDB != null) {
+        connectDB.close();
+        System.out.println("LOG: Disconnect database!");
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
   }
 }

@@ -109,6 +109,7 @@ public class Controller implements Initializable {
               if (str.equals("/end")) {
                 break;
               }
+              System.out.println("Test: " + str);
               if (str.startsWith("/authOK")) {
                 nickname = str.split("\\s")[1];
                 setAuthenticated(true);               // Аутентификация одобрена. Переход в режим отправки сообщений в чат.
