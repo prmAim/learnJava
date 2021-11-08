@@ -17,6 +17,7 @@
     </stylesheets>
     <MenuBar>
         <Menu text="File">
+            <MenuItem onAction="#showRegWindow" text="Registration" />
             <MenuItem onAction="#clickClose" text="Exit" />
         </Menu>
     </MenuBar>

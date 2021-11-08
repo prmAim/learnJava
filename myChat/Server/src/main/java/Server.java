@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLOutput;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -17,19 +18,25 @@ public class Server {
 
   public Server() {
     clients = new CopyOnWriteArrayList<>();  // Список клиентов
-    authService = new SimpleAuthService();   // Аутентивикация клиентов
+
+    if (!SQLHandler.connectToDB()) {
+      System.out.println("LOG: Don't connected to Database error!");
+      throw new RuntimeException("Не удалось подключиться к БД");
+    }
+    authService = new DBAuthServise();   // Аутентивикация клиентов
     try {
       server = new ServerSocket(PORT);    // Открываем порт на сервере
       System.out.println("LOG: Server started!");
 
       while (true) {
         socket = server.accept();       // Слушаем порт. БЛОКИРУЮЩАЯ операция.
-        System.out.println("LOG: Client connected! Сокет " + socket.getRemoteSocketAddress());
+        System.out.println("LOG: Client connected! Socket: " + socket.getRemoteSocketAddress());
         new ClientHandler(socket, this);    // Создаем объект <работа с клиентом>. Запускаем логику ратобы с клиентом.
       }
     } catch (IOException e) {
       e.printStackTrace();
     } finally {
+      SQLHandler.disconnectToDB();
       try {
         server.close();             // Закрываем соединение.
         System.out.println("LOG: Server close!");
@@ -44,6 +51,7 @@ public class Server {
    */
   public void broadcastMsg(ClientHandler sender, String msg) {
     String message = String.format("[ %s ]: %s", sender.getNickname(), msg);
+    SQLHandler.addMessageLog(sender.getNickname(), "all", msg, true);
     for (ClientHandler c : clients) {
       c.sendMsg(message);
     }
@@ -57,6 +65,7 @@ public class Server {
     for (ClientHandler c : clients) {
       if (c.getNickname().equals(receiver)) {
         c.sendMsg(message);
+        SQLHandler.addMessageLog(sender.getNickname(), receiver, msg, false);
         if (!c.equals(sender)) {
           sender.sendMsg(message);
         }

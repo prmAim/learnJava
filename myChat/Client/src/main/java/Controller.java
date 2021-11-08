@@ -140,6 +140,10 @@ public class Controller implements Initializable {
                   }
                 });
               }
+              if (str.startsWith("/yournickis ")) {
+                nickname = str.split(" ")[1];
+                setTitle(nickname);
+              }
             } else {
               textArea.appendText(str + "\n");  // Вывод данных в поле сообщений
             }
@@ -227,6 +231,9 @@ public class Controller implements Initializable {
     });
   }
 
+  /**
+   * Получить список пользователей
+   */
   public void clientListClick(MouseEvent mouseEvent) {
     String receiver = clientList.getSelectionModel().getSelectedItem();
     textField.setText(String.format("/w %s ", receiver));
