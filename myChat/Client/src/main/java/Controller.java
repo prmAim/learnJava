@@ -17,11 +17,12 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
@@ -40,6 +41,8 @@ public class Controller implements Initializable {
   @FXML
   private HBox sendMsgPanel;
 
+  private final String MASK_FILE_HISTORY = "history_";
+
   private Socket socket;
   private final int PORT = 8189;                  // Порт сервера
   private final String IP_ADDRESS = "localhost";  // IP-адрес сервера
@@ -51,6 +54,9 @@ public class Controller implements Initializable {
   private Stage stage;
   private Stage regStage;
   private RegController regController;
+  private FileWriter writerFile;
+  public File fileHistoryChat;
+  private List<String> historChat;
 
   /**
    * Режим работы клиента Авторизован/НЕ автаризован
@@ -67,6 +73,17 @@ public class Controller implements Initializable {
     }
     setTitle(nickname);           // установить заголовок Окна
     textArea.clear();             // Очистить сообщения в чате
+    fileHistoryChat = new File(MASK_FILE_HISTORY + nickname + ".log");
+    if (authenticated && fileHistoryChat.exists()) {
+      try {
+        historChat = Files.readAllLines(Paths.get(fileHistoryChat.toString()));   // достаем историю переписка в чате из файла
+        for (int i = 0; i < historChat.size(); i++) {
+          textArea.appendText(historChat.get(i) + "\n");
+        }
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
   }
 
   /**
@@ -112,6 +129,7 @@ public class Controller implements Initializable {
               if (str.startsWith("/authOK")) {
                 nickname = str.split("\\s")[1];
                 setAuthenticated(true);               // Аутентификация одобрена. Переход в режим отправки сообщений в чат.
+                writerFile = new FileWriter(fileHistoryChat, true);   // открывает фаил на запись
                 break;
               }
               if (str.equals("/regOK")) {
@@ -146,6 +164,8 @@ public class Controller implements Initializable {
               }
             } else {
               textArea.appendText(str + "\n");  // Вывод данных в поле сообщений
+              writerFile.write(str + "\n"); // сохраняем историю переписки
+              writerFile.flush();
             }
           }
 
@@ -295,6 +315,4 @@ public class Controller implements Initializable {
     });
     setAuthenticated(false);
   }
-
-
 }

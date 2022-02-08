@@ -50,7 +50,7 @@ public class ClientHandler {
                   server.subscribe(this);     // Добавление клиента в список рассылки
                   isAuthenticated = true;                // Флаг аутентификации
                   socket.setSoTimeout(0);
-                  sendMsg(SQLHandler.getMessageForNickname(nickname));
+//                  sendMsg(SQLHandler.getMessageForNickname(nickname));    // Отправка истории из БД
                   System.out.printf("LOG: Client [%s] authecated!\n", nickname);
                   break;
                 } else {
