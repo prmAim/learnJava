@@ -51,6 +51,7 @@ public class Controller implements Initializable {
   private Stage stage;
   private Stage regStage;
   private RegController regController;
+  private String login;
 
   /**
    * Режим работы клиента Авторизован/НЕ автаризован
@@ -64,6 +65,7 @@ public class Controller implements Initializable {
 
     if (!authenticated) {
       nickname = "";
+      History.stop();
     }
     setTitle(nickname);           // установить заголовок Окна
     textArea.clear();             // Очистить сообщения в чате
@@ -83,6 +85,7 @@ public class Controller implements Initializable {
           System.out.println("Log: Bye!");
           if (socket != null && !socket.isClosed()) {         // проверка на открытие сокета. Если открыт, закрываем.
             try {
+              History.stop();
               out.writeUTF("/end");
             } catch (IOException e) {
               e.printStackTrace();
@@ -112,6 +115,8 @@ public class Controller implements Initializable {
               if (str.startsWith("/authOK")) {
                 nickname = str.split("\\s")[1];
                 setAuthenticated(true);               // Аутентификация одобрена. Переход в режим отправки сообщений в чат.
+                textArea.appendText(History.getLast100LinesOfHistor(login));    // Показать историю 100 последних строк.
+                History.start(login);                                           // Открываем фаил на запись.
                 break;
               }
               if (str.equals("/regOK")) {
@@ -146,6 +151,7 @@ public class Controller implements Initializable {
               }
             } else {
               textArea.appendText(str + "\n");  // Вывод данных в поле сообщений
+              History.writeLine(str);
             }
           }
 
@@ -206,7 +212,7 @@ public class Controller implements Initializable {
       connect();
     }
 
-    String login = loginField.getText().trim();
+    login = loginField.getText().trim();
     String password = passwordField.getText().trim();     // Убираем пробелы
     String msg = String.format("/auth %s %s", login, password);
 
