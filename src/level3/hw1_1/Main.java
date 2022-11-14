@@ -5,7 +5,6 @@ import level3.hw1_1.fruit.Orange;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class Main {
   public static void main(String[] args) {
@@ -17,17 +16,17 @@ public class Main {
     System.out.print("  Исходный массив: ");
     System.out.println(Arrays.toString(array));
 
-    changeElement(array, 0, 1);
+    swapElement(array, 0, 1);
 
     System.out.print("Результат массива: ");
     System.out.println(Arrays.toString(array));
 
-    System.out.println("Задание 2. \n" +
+    System.out.println("\nЗадание 2. \n" +
             "Написать метод, который преобразует массив в ArrayList;");
-    System.out.println(magicArrayToArrayList(array).getClass());
-    System.out.println(magicArrayToArrayList(array));
+    System.out.println(arrayToArrayList(array).getClass());
+    System.out.println(arrayToArrayList(array));
 
-    System.out.println("Задание 3. \n" +
+    System.out.println("\n Задание 3. \n" +
             "Даны классы Fruit, Apple extends Fruit, Orange extends Fruit;\n" +
             "Класс Box, в который можно складывать фрукты. Коробки условно сортируются по типу фрукта, поэтому в одну коробку нельзя сложить и яблоки, и апельсины;\n" +
             "Для хранения фруктов внутри коробки можно использовать ArrayList;\n" +
@@ -46,16 +45,16 @@ public class Main {
     System.out.println("Вес коробки яблок2 =" + appleBox2.getWeight() + " Вес коробки апельсинов2 =" + orangeBox2.getWeight() + " Сравнить=" + appleBox2.compare(orangeBox2));
 
     System.out.println("\n Пересыпаем фрукты");
-    appleBox1.putToDstBox(appleBox2);
+    appleBox1.transferToDstBox(appleBox2);
     System.out.println("Вес коробки яблок1 =" + appleBox1.getWeight());
     System.out.println("Вес коробки яблок2 =" + appleBox2.getWeight());
-    appleBox1.putToDstBox(appleBox2);
+    appleBox1.transferToDstBox(appleBox2);
     System.out.println("Вес коробки яблок1 =" + appleBox1.getWeight());
     System.out.println("Вес коробки яблок2 =" + appleBox2.getWeight());
-    orangeBox2.putToDstBox(orangeBox2);
+    orangeBox2.transferToDstBox(orangeBox2);
     System.out.println("Вес коробки апельсинов1 =" + orangeBox1.getWeight());
     System.out.println("Вес коробки апельсинов2 =" + orangeBox2.getWeight());
-    orangeBox2.putToDstBox(orangeBox1);
+    orangeBox2.transferToDstBox(orangeBox1);
     System.out.println("Вес коробки апельсинов1 =" + orangeBox1.getWeight());
     System.out.println("Вес коробки апельсинов2 =" + orangeBox2.getWeight());
   }
@@ -67,11 +66,11 @@ public class Main {
    * @param src  - элемент, который меняем на dest
    * @param dest - элемент, который меняется на  src
    */
-  static <T> void changeElement(T[] arr, int src, int dest) {
-    if (src >= arr.length) {
+  static <T> void swapElement(T[] arr, int src, int dest) {
+    if (src >= arr.length && src < 0) {
       throw new ArrayIndexOutOfBoundsException("This array index = " + src + " is  greater than the length of the array = " + (arr.length - 1));
     }
-    if (dest >= arr.length) {
+    if (dest >= arr.length && dest < 0) {
       throw new ArrayIndexOutOfBoundsException("This array index = " + dest + " is src greater than the length of the array = " + (arr.length - 1));
     }
     if (src != dest) {
@@ -84,7 +83,7 @@ public class Main {
   /**
    * Написать метод, который преобразует массив в ArrayList
    */
-  static <T> List<T> magicArrayToArrayList(T[] arr){
+  static <T> ArrayList<T> arrayToArrayList(T[] arr){
     return new ArrayList<T>(Arrays.asList(arr));
   }
 }

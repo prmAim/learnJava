@@ -12,7 +12,8 @@ import java.util.List;
 public class Box<T extends Fruit> {
   private List<T> fruits;
 
-  private Box() {
+  public Box() {
+    this.fruits = new ArrayList<>();
   }
 
   public Box(T... fruits) {
@@ -33,7 +34,7 @@ public class Box<T extends Fruit> {
    * @return вес коробки
    */
   public float getWeight() {
-    float sumWeight = 0;
+    float sumWeight = 0.0f;
     for (T fruit : fruits) {
       sumWeight += fruit.getWeight();
     }
@@ -44,20 +45,18 @@ public class Box<T extends Fruit> {
    * Cравнение веса текущей коробки
    **/
   public boolean compare(Box<? extends Fruit> box2) {
-    return this.getWeight() == box2.getWeight();
+    return Math.abs(this.getWeight() - box2.getWeight()) < 0.0001;
   }
 
   /**
    * Метод пересыпать фрукты из текущей коробки в другую
    */
-  public void putToDstBox(Box<T> dstBox){
+  public void transferToDstBox(Box<T> dstBox){
     if (this == dstBox ){
       return;
     }
-    for (T fruit: this.fruits){
-      dstBox.addFruitIntoBox(fruit);
-    }
-    this.removeFruitFromBox();
+    dstBox.fruits.addAll(this.fruits);
+    this.fruits.clear();
   }
 
   /**
